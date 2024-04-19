@@ -50,7 +50,11 @@ public class ProcessUtils {
         final ProcessBuilder pb = new ProcessBuilder(args);
         final Map<String, String> env = pb.environment();
 
-        env.put("PATH", env.get("PATH") + System.getProperty("path.separator") + Paths.get("").toAbsolutePath()+".localbin");
+        // add .fastback/git/cmd to PATH
+        // if windows,
+        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+            env.put("PATH", env.get("PATH") + System.getProperty("path.separator") + Paths.get("").toAbsolutePath()+".fastback/git/cmd");
+        }
 
         // Output a few values that are important for debugging; don't indiscriminately dump everything or someone's going
         // to end up uploading a bunch of passwords into pastebin.
