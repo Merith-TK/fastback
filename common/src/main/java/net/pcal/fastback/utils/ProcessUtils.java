@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,9 @@ public class ProcessUtils {
         syslog().debug("Executing " + String.join(" ", args));
         final ProcessBuilder pb = new ProcessBuilder(args);
         final Map<String, String> env = pb.environment();
+
+        env.put("PATH", env.get("PATH") + System.getProperty("path.separator") + Paths.get("").toAbsolutePath()+".localbin");
+
         // Output a few values that are important for debugging; don't indiscriminately dump everything or someone's going
         // to end up uploading a bunch of passwords into pastebin.
         syslog().debug("PATH: " + env.get("PATH"));
