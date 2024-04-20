@@ -65,6 +65,9 @@ abstract class ReclamationUtils {
     static void doReclamation(RepoImpl repo, UserLogger ulog) throws GitAPIException, ProcessException {
         if (repo.getConfig().getBoolean(IS_NATIVE_GIT_ENABLED)) {
             native_doLfsPrune(repo, ulog);
+            if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
+                native_doLfsDedup(repo, ulog);
+            }
         } else {
             try {
                 jgit_doGc(repo, ulog);
@@ -80,6 +83,14 @@ abstract class ReclamationUtils {
         final Consumer<String> outputConsumer = line -> ulog.update(styledRaw(line, NATIVE_GIT));
         doExec(push, Collections.emptyMap(), outputConsumer, outputConsumer);
         syslog().debug("native_doLfsPrune");
+    }
+
+    private static void native_doLfsDedup(RepoImpl repo, UserLogger ulog) throws ProcessException {
+        final File worktree = repo.getWorkTree();
+        final String[] push = {"git", "-C", worktree.getAbsolutePath(), "lfs", "dedup", "--verbose",};
+        final Consumer<String> outputConsumer = line -> ulog.update(styledRaw(line, NATIVE_GIT));
+        doExec(push, Collections.emptyMap(), outputConsumer, outputConsumer);
+        syslog().debug("native_doLfsDedup");
     }
 
     /**
