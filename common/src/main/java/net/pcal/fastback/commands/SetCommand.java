@@ -132,7 +132,7 @@ enum SetCommand implements Command {
                     final GitConfig conf = repo.getConfig();
                     boolean current = conf.getBoolean(key);
                     if (current == newValue) {
-                        ulog.message(raw("No change.")); // FIXME i18n
+                        ulog.message(localized("fastback.chat.no-change"));
                     } else {
                         repo.getConfig().updater().set(key, newValue).save();
                         ulog.message(raw(key.getDisplayName() + " = " + newValue));

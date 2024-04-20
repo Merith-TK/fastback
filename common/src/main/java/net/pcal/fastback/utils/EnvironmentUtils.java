@@ -69,11 +69,11 @@ public class EnvironmentUtils {
                 ulog.message(styledLocalized("fastback.chat.info-native-not-installed", ERROR, path));
                 return false;
             } else if (verbose) {
-                ulog.message(styledRaw("Native git is installed.", NATIVE_GIT)); // fixme i18n
+                ulog.message(styledLocalized("fastback.chat.info-native-installed", NATIVE_GIT));
             }
         } else {
             if (verbose) {
-                ulog.message(styledRaw("Native git is disabled.", WARNING)); // fixme i18n
+                ulog.message(styledLocalized("fastback.chat.info-native-disabled", WARNING));
             }
         }
         return true;

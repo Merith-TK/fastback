@@ -30,9 +30,8 @@ import java.nio.file.Path;
 import static net.pcal.fastback.config.FastbackConfigKey.IS_NATIVE_GIT_ENABLED;
 import static net.pcal.fastback.config.OtherConfigKey.COMMIT_SIGNING_ENABLED;
 import static net.pcal.fastback.logging.SystemLogger.syslog;
+import static net.pcal.fastback.logging.UserMessage.*;
 import static net.pcal.fastback.logging.UserMessage.UserMessageStyle.*;
-import static net.pcal.fastback.logging.UserMessage.raw;
-import static net.pcal.fastback.logging.UserMessage.styledRaw;
 import static net.pcal.fastback.repo.WorldIdUtils.createWorldId;
 import static net.pcal.fastback.repo.WorldIdUtils.ensureWorldHasId;
 import static net.pcal.fastback.utils.EnvironmentUtils.isNativeOk;
@@ -47,7 +46,7 @@ class RepoFactoryImpl implements RepoFactory {
     public void doInit(final Path worldSaveDir, final UserLogger ulog) throws IOException {
         if (isGitRepo(worldSaveDir)) {
             ensureWorldHasId(worldSaveDir);
-            ulog.message(styledRaw("Backups already initialized.", WARNING)); // FIXME i18n
+            ulog.message(styledLocalized("fastback.chat.enabled", WARNING));
             return;
         }
         // If they haven't yet run 'backup init', make sure they've installed native.

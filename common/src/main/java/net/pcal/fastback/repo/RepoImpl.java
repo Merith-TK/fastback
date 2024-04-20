@@ -130,7 +130,7 @@ class RepoImpl implements Repo {
     @Override
     public void doPushSnapshot(SnapshotId sid, final UserLogger ulog) {
         if (!this.getConfig().isSet(REMOTE_PUSH_URL)) {
-            ulog.message(styledLocalized("No remote is configured.  Run set-remote <url>", ERROR)); //FIXME i18n
+            ulog.message(styledLocalized("fastback.chat.remote-no-url", ERROR));
             return;
         }
         if (isNativeOk(this.getConfig(), ulog, false)) return;
@@ -142,7 +142,7 @@ class RepoImpl implements Repo {
             syslog().error(e);
             return;
         }
-        ulog.message(UserMessage.localized("Successfully pushed " + sid.getShortName() + ".  Time elapsed: " + getDuration(start))); // FIXME i18n
+        ulog.message(UserMessage.localized("fastback.chat.push-done-elapsed", sid.getShortName(), getDuration(start)));
     }
 
 
@@ -162,7 +162,7 @@ class RepoImpl implements Repo {
         try {
             ReclamationUtils.doReclamation(this, ulog);
         } catch (ProcessException | GitAPIException e) {
-            ulog.message(styledLocalized("Command failed.  Check log for details.", ERROR)); // FIXME i18n
+            ulog.message(styledLocalized("fastback.chat.gc-failed", ERROR));
             syslog().error(e);
         }
     }
@@ -285,9 +285,9 @@ class RepoImpl implements Repo {
     private void checkIndexLock(UserLogger ulog) {
         final File lockFile = this.getWorkTree().toPath().resolve(".git/index.lock").toFile();
         if (lockFile.exists()) {
-            ulog.message(styledRaw(lockFile.getAbsolutePath() + "exists", WARNING)); //FIXME i18n
+            ulog.message(styledLocalized("fastback.chat.lockfile-exists", WARNING, lockFile.getAbsolutePath()));
             if (getConfig().getBoolean(IS_LOCK_CLEANUP_ENABLED)) {
-                ulog.message(styledRaw("lock-cleanup-enabled = true, attempting to delete index.lock", WARNING)); //FIXME i18n
+                ulog.message(styledLocalized("fastback.chat.lockfile-cleanup-enabled", WARNING, "lock-cleanup-enabled = true"));
                 try {
                     FileUtils.delete(lockFile, RETRY);
                 } catch (IOException e) {

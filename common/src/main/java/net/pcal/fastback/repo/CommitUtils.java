@@ -177,7 +177,7 @@ abstract class CommitUtils {
                     for (final String file : toAdd) {
                         final AddCommand gitAdd = jgit.add();
                         syslog().debug("add  " + file);
-                        ulog.update(styledRaw("Backing up " + file, JGIT)); //FIXME i18n
+                        ulog.update(styledLocalized("fastback.chat.backup-start", JGIT, file));
                         gitAdd.addFilepattern(file);
                         gitAdd.call();
                     }
@@ -193,7 +193,7 @@ abstract class CommitUtils {
                     for (final String file : toDelete) {
                         final RmCommand gitRm = jgit.rm();
                         syslog().debug("rm  " + file);
-                        ulog.update(styledRaw("Removing " + file, JGIT)); //FIXME i18n
+                        ulog.update(styledLocalized("fastback.chat.backup-start", JGIT, file));
                         gitRm.addFilepattern(file);
                         gitRm.call();
                     }
@@ -204,7 +204,7 @@ abstract class CommitUtils {
             syslog().debug("World save re-enabled.");
         }
         syslog().debug("commit");
-        ulog.update(styledRaw("Commit complete", JGIT)); //FIXME i18n
+        ulog.update(styledLocalized("fastback.chat.commit-complete", JGIT));
         jgit.commit().setMessage(newBranchName).call();
     }
 

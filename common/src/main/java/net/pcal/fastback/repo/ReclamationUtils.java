@@ -20,6 +20,7 @@ package net.pcal.fastback.repo;
 
 import net.pcal.fastback.config.GitConfig;
 import net.pcal.fastback.logging.UserLogger;
+import net.pcal.fastback.logging.UserMessage;
 import net.pcal.fastback.utils.FileUtils;
 import net.pcal.fastback.utils.ProcessException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -163,9 +164,9 @@ abstract class ReclamationUtils {
 
         @Override
         public void progressDone(String task) {
-            final String message = "Done " + task;
-            syslog().debug(message);
-            this.ulog.update(styledLocalized(message, JGIT)); // FIXME i18n?
+            final UserMessage msg = styledLocalized("fastback.chat.gc-done-no-reclaim", JGIT);
+            syslog().debug(msg.toString());
+            ulog.update(msg);
         }
 
         @Override

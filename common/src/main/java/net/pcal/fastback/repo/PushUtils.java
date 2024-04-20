@@ -21,6 +21,7 @@ package net.pcal.fastback.repo;
 import com.google.common.collect.ListMultimap;
 import net.pcal.fastback.config.GitConfig;
 import net.pcal.fastback.logging.UserLogger;
+import net.pcal.fastback.logging.UserMessage;
 import net.pcal.fastback.utils.ProcessException;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -291,9 +292,9 @@ abstract class PushUtils {
 
         @Override
         public void progressDone(String task) {
-            final String msg = "Done " + task; // FIXME i18n
-            syslog().debug(msg);
-            ulog.update(styledRaw(msg, JGIT));
+            final UserMessage msg = styledLocalized("fastback.chat.push-done", JGIT);
+            syslog().debug(msg.toString());
+            ulog.update(msg);
         }
 
         @Override
