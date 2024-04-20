@@ -11,6 +11,8 @@ build/
 out/
 classes/
 
+*/bin
+
 # eclipse
 
 *.launch
