@@ -36,6 +36,9 @@ import static net.pcal.fastback.utils.ProcessUtils.doExec;
 
 public class EnvironmentUtils {
 
+    public static String gitVersion;
+    public static String gitLfsVersion;
+
     public static String getGitVersion() {
         return execForVersion(new String[]{"git", "--version"});
     }
@@ -57,8 +60,11 @@ public class EnvironmentUtils {
     public static boolean isNativeOk(boolean isNativeGitEnabled, UserLogger ulog, boolean verbose) {
         if (isNativeGitEnabled) {
             final Component notInstalled = Component.translatable("fastback.values.not-installed");
-            final String gitVersion = getGitVersion();
-            final String gitLfsVersion = getGitLfsVersion();
+            // if gitVersion or gitLfsVersion is null, then run the check again
+            if (gitVersion == null || gitLfsVersion == null) {
+                gitVersion = getGitVersion();
+                gitLfsVersion = getGitLfsVersion();
+            }
             final boolean isNativeInstalled = (gitVersion != null && gitLfsVersion != null);
             if (verbose || !isNativeInstalled) {
                 ulog.message(localized("fastback.chat.info-native-git-version", gitVersion != null ? gitVersion : notInstalled));

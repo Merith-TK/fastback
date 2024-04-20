@@ -28,6 +28,7 @@ import net.pcal.fastback.repo.Repo;
 import net.pcal.fastback.retention.RetentionPolicy;
 import net.pcal.fastback.retention.RetentionPolicyCodec;
 import net.pcal.fastback.retention.RetentionPolicyType;
+import net.pcal.fastback.utils.EnvironmentUtils;
 
 import java.util.function.Function;
 
@@ -75,6 +76,8 @@ enum InfoCommand implements Command {
             try {
                 ulog.message(UserMessage.localized("fastback.chat.info-header"));
                 ulog.message(UserMessage.localized("fastback.chat.info-fastback-version", mod().getModVersion()));
+                gitVersion = getGitVersion();
+                gitLfsVersion = getGitLfsVersion();
                 if (!rf().isGitRepo(mod().getWorldDirectory())) {
                     // If they haven't yet run 'backup init', make sure they've installed native.
                     if (!isNativeOk(true, ulog, true)) return FAILURE;

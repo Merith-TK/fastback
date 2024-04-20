@@ -24,6 +24,7 @@ import net.pcal.fastback.logging.UserLogger;
 import net.pcal.fastback.logging.UserMessage;
 import net.pcal.fastback.repo.Repo;
 import net.pcal.fastback.repo.RepoFactory;
+import net.pcal.fastback.utils.EnvironmentUtils;
 import org.eclipse.jgit.transport.SshSessionFactory;
 
 import java.io.IOException;
@@ -37,8 +38,7 @@ import static net.pcal.fastback.config.FastbackConfigKey.IS_BACKUP_ENABLED;
 import static net.pcal.fastback.config.FastbackConfigKey.SHUTDOWN_ACTION;
 import static net.pcal.fastback.logging.SystemLogger.syslog;
 import static net.pcal.fastback.logging.UserMessage.localized;
-import static net.pcal.fastback.utils.EnvironmentUtils.getGitLfsVersion;
-import static net.pcal.fastback.utils.EnvironmentUtils.getGitVersion;
+import static net.pcal.fastback.utils.EnvironmentUtils.*;
 import static net.pcal.fastback.utils.Executor.executor;
 
 class ModImpl implements LifecycleListener, Mod {
@@ -147,7 +147,7 @@ class ModImpl implements LifecycleListener, Mod {
     @Override
     public void onInitialize() {
         {
-            final String gitVersion = getGitVersion();
+            gitVersion = getGitVersion();
             if (gitVersion == null) {
                 syslog().warn("git is not installed.");
             } else {
@@ -155,7 +155,7 @@ class ModImpl implements LifecycleListener, Mod {
             }
         }
         {
-            final String gitLfsVersion = getGitLfsVersion();
+            gitLfsVersion = getGitLfsVersion();
             if (gitLfsVersion == null) {
                 syslog().warn("git-lfs is not installed.");
             } else {
