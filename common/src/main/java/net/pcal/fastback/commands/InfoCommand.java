@@ -75,6 +75,7 @@ enum InfoCommand implements Command {
             try {
                 ulog.message(UserMessage.localized("fastback.chat.info-header"));
                 ulog.message(UserMessage.localized("fastback.chat.info-fastback-version", mod().getModVersion()));
+                ulog.message(UserMessage.raw("GitPath: " + getGitPath()));
                 if (!rf().isGitRepo(mod().getWorldDirectory())) {
                     // If they haven't yet run 'backup init', make sure they've installed native.
                     if (!isNativeOk(true, ulog, true)) return FAILURE;

@@ -36,12 +36,19 @@ import static net.pcal.fastback.utils.ProcessUtils.doExec;
 
 public class EnvironmentUtils {
 
+    public static String GIT_PATH = null;
+
     public static String getGitVersion() {
         return execForVersion(new String[]{"git", "--version"});
     }
 
     public static String getGitLfsVersion() {
-        return execForVersion(new String[]{"git-lfs", "--version"});
+        return execForVersion(new String[]{"git", "lfs", "--version"});
+    }
+
+    public static String getGitPath() {
+        GIT_PATH = execForVersion(new String[]{"git", "--exec-path"});
+        return GIT_PATH;
     }
 
     /**
@@ -69,7 +76,9 @@ public class EnvironmentUtils {
                 ulog.message(styledLocalized("fastback.chat.info-native-not-installed", ERROR, path));
                 return false;
             } else if (verbose) {
+                // set GIT_PATH with `git --exec-path` to avoid issues with git not being in PATH
                 ulog.message(styledRaw("Native git is installed.", NATIVE_GIT)); // fixme i18n
+                getGitPath();
             }
         } else {
             if (verbose) {

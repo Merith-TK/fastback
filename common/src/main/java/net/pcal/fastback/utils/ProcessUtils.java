@@ -31,6 +31,8 @@ import java.util.function.Consumer;
 
 import static java.util.Objects.requireNonNull;
 import static net.pcal.fastback.logging.SystemLogger.syslog;
+import static net.pcal.fastback.utils.EnvironmentUtils.GIT_PATH;
+import static net.pcal.fastback.utils.EnvironmentUtils.getGitPath;
 
 
 /**
@@ -49,12 +51,22 @@ public class ProcessUtils {
         syslog().debug("Executing " + String.join(" ", args));
         final ProcessBuilder pb = new ProcessBuilder(args);
         final Map<String, String> env = pb.environment();
+        // clear the environment so that we don't inherit anything from the parent process
+        env.clear();
 
-        // add .fastback/git/cmd to PATH
-        // if windows,
-        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-            env.put("PATH", env.get("PATH") + System.getProperty("path.separator") + Paths.get("").toAbsolutePath()+".fastback/git/cmd");
+        if (GIT_PATH == null) {
+            GIT_PATH = "no-infinite-loop";  // FIXME this is a hack to prevent infinite recursion since getGitPath() calls doExec()
+            GIT_PATH = getGitPath();
+        } else {
+            env.put("PATH", GIT_PATH);
         }
+
+        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+            final String FASTBACK_PATH = Paths.get("").toAbsolutePath()+".fastback\\git\\cmd";
+            env.put("PATH",  FASTBACK_PATH + System.getProperty("path.separator") + env.get("PATH"));
+        }
+        // print GIT_PATH
+        syslog().debug("GIT_PATH: " + GIT_PATH);
 
         // Output a few values that are important for debugging; don't indiscriminately dump everything or someone's going
         // to end up uploading a bunch of passwords into pastebin.

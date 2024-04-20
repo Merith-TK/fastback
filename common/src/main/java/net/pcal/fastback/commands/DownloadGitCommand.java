@@ -97,7 +97,7 @@ enum DownloadGitCommand implements Command {
                         String name = asset.get("name").getAsString();
                         if (name.matches( "MinGit-.*-64-bit\\.zip")) {
                             String downloadUrl = asset.get("browser_download_url").getAsString();
-                            String destinationPath = Paths.get(DOWNLOAD_DIR, name).toString();
+                            String destinationPath = Paths.get(DOWNLOAD_DIR, "minget-windows-x64.zip").toString();
                             File file = new File(destinationPath);
                             if (!file.exists()) {
                                 downloadFile(downloadUrl, destinationPath);
@@ -109,8 +109,14 @@ enum DownloadGitCommand implements Command {
                     }
                     log.message(UserMessage.raw("Downloaded latest Git for Windows release."));
                     log.message(UserMessage.raw("Extracting to " + Paths.get(".fastback/git").toAbsolutePath().toString()));
+                    // purge the old git directory
+                    try {
+                        Files.delete(Paths.get(".fastback/git"));
+                    } catch (IOException e) {
+                        // ignore
+                    }
                     // extract the zipfile to ./.fastback/git
-                    unzip(Paths.get(DOWNLOAD_DIR, "MinGit-*.zip").toString(), Paths.get(".fastback/git").toAbsolutePath().toString());
+                    unzip(Paths.get(DOWNLOAD_DIR, "minget-windows-x64.zip").toString(), Paths.get(".fastback/git").toAbsolutePath().toString());
                     log.message(UserMessage.raw("Extraction complete."));
                 } catch (Exception e) {
                     throw new RuntimeException("Failed to get latest release: " + e.getMessage());
@@ -134,35 +140,48 @@ enum DownloadGitCommand implements Command {
     }
     private static void unzip(String zipFilePath, String destDir) {
         File dir = new File(destDir);
-        // create output directory if it doesn't exist
+        // delete the old directory
         try {
-            Files.createDirectories(Paths.get(destDir));
+            Files.delete(dir.toPath());
         } catch (IOException e) {
-            e.printStackTrace();
-            return;
+            // ignore
         }
+        // create output directory if it doesn't exist
+        if(!dir.exists()) dir.mkdirs();
+        FileInputStream fis;
+        //buffer for read and write data to file
         byte[] buffer = new byte[1024];
-        try (FileInputStream fis = new FileInputStream(zipFilePath);
-             ZipInputStream zis = new ZipInputStream(fis)) {
+        try {
+            fis = new FileInputStream(zipFilePath);
+            ZipInputStream zis = new ZipInputStream(fis);
             ZipEntry ze = zis.getNextEntry();
-            while (ze != null) {
+            while(ze != null){
                 String fileName = ze.getName();
                 File newFile = new File(destDir + File.separator + fileName);
-                System.out.println("Unzipping to " + newFile.getAbsolutePath());
+                System.out.println("Unzipping to "+newFile.getAbsolutePath());
                 //create directories for sub directories in zip
-                new File(newFile.getParent()).mkdirs();
-                try (FileOutputStream fos = new FileOutputStream(newFile)) {
-                    int len;
-                    while ((len = zis.read(buffer)) > 0) {
-                        fos.write(buffer, 0, len);
-                    }
+                if (ze.isDirectory()) {
+                    // create directory if required.
+                    new File(newFile.getParent()).mkdirs();
+ze = zis.getNextEntry();
+                    continue;
+                } else {
+                    new File(newFile.getParent()).mkdirs();
                 }
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, len);
+                }
+                fos.close();
                 //close this ZipEntry
                 zis.closeEntry();
                 ze = zis.getNextEntry();
             }
             //close last ZipEntry
             zis.closeEntry();
+            zis.close();
+            fis.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
