@@ -37,7 +37,11 @@ public enum OtherConfigKey implements GitConfigKey {
     /**
      * We disable commit signing on git init.  https://github.com/pcal43/fastback/issues/165
      */
-    COMMIT_SIGNING_ENABLED("commit", null, "gpgsign");
+    COMMIT_SIGNING_ENABLED("commit", null, "gpgsign"),
+
+    // Allow reading the user's name and email from .gitconfig
+    USER_NAME("user", null, "name"),
+    USER_EMAIL("user", null, "email");
 
     private final String sectionName, subSectionName, settingName;
 

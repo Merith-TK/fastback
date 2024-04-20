@@ -19,9 +19,11 @@
 package net.pcal.fastback.repo;
 
 import net.pcal.fastback.config.GitConfig.Updater;
+import net.pcal.fastback.config.GitConfigKey;
 import net.pcal.fastback.logging.UserLogger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.StoredConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,6 +60,17 @@ class RepoFactoryImpl implements RepoFactory {
             final Updater updater = repo.getConfig().updater();
             updater.set(COMMIT_SIGNING_ENABLED, false); // because some people have it set globally
             updater.set(IS_NATIVE_GIT_ENABLED, true);
+
+            StoredConfig config = jgit.getRepository().getConfig();
+            String userName = config.getString("user", null, "name");
+            String userEmail = config.getString("user", null, "email");
+
+            if (userName == null || userName.isEmpty() || userEmail == null || userEmail.isEmpty()) {
+                // set from fastback world id
+                String worldId = WorldIdUtils.getWorldIdInfo(worldSaveDir).wid().toString();
+                config.setString("user", null, "name", worldId);
+                config.setString("user", null, "email", worldId + "@fastback");
+            }
             updater.save();
             ulog.message(raw("Backups initialized.  Run '/backup local' to do your first backup.  '/backup help' for more options."));
         } catch (GitAPIException e) {

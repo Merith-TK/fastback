@@ -36,7 +36,7 @@ class GitConfigImpl implements GitConfig {
         return new GitConfigImpl(jgit.getRepository().getConfig());
     }
 
-    private final StoredConfig storedConfig;
+    public final StoredConfig storedConfig;
 
     GitConfigImpl(StoredConfig jgitConfig) {
         this.storedConfig = requireNonNull(jgitConfig);

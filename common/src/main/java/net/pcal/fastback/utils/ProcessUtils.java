@@ -51,8 +51,14 @@ public class ProcessUtils {
         // Output a few values that are important for debugging; don't indiscriminately dump everything or someone's going
         // to end up uploading a bunch of passwords into pastebin.
         syslog().debug("PATH: " + env.get("PATH"));
-        syslog().debug("USER: " + env.get("USER"));
-        syslog().debug("HOME: " + env.get("HOME"));
+        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+            syslog().debug("HOME: " + env.get("USERPROFILE"));
+            syslog().debug("USER: " + env.get("USERNAME"));
+        } else {
+            syslog().debug("HOME: " + env.get("HOME"));
+            syslog().debug("USER: " + env.get("USER"));
+        }
+
         final List<String> errorBuffer = new ArrayList<>();
         final Consumer<String> stdout = line -> {
             syslog().debug("[STDOUT] " + line);
