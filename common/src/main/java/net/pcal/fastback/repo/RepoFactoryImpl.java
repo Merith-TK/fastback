@@ -65,6 +65,8 @@ class RepoFactoryImpl implements RepoFactory {
             String userName = config.getString("user", null, "name");
             String userEmail = config.getString("user", null, "email");
 
+            // If they don't have name/email set (as most non-git-users won't), provide synthetic values as a convenience.
+            // Presumbably, most folks don't care.
             if (userName == null || userName.isEmpty() || userEmail == null || userEmail.isEmpty()) {
                 // set from fastback world id
                 String worldId = WorldIdUtils.getWorldIdInfo(worldSaveDir).wid().toString();
